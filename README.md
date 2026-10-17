@@ -42,7 +42,7 @@ La photo est `src/assets/portrait.jpg` (format 4:5, fond clair et uni pour un be
 - Le JSON-LD `Person` et le contenu HTML de secours (lu par les robots sans JavaScript) sont générés au build depuis `src/content.ts`. Ils restent donc à jour quand tu modifies tes expériences.
 - `robots.txt` et `sitemap.xml` sont générés au build (et servis par `npm run dev`).
 - L'image de partage est `public/og.jpg`.
-- Google Search Console : choisis la méthode « Balise HTML », décommente la ligne `google-site-verification` dans `index.html`, colle ton code, puis pousse. Soumets ensuite `sitemap.xml`.
+- Google Search Console : la balise `google-site-verification` est dans `index.html`, juste après `<title>`. Soumets `sitemap.xml` dans la Search Console.
 
 ## Mettre en ligne sur Cloudflare Pages
 
