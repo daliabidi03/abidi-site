@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { LINKS } from '../content'
+import { LINKS, ME } from '../content'
 import { useI18n } from '../i18n'
 import { startHero } from '../lib/heroEngine'
 import portraitUrl from '../assets/portrait.jpg'
@@ -33,9 +33,12 @@ export function Hero({ onRecruiter, onTerminal }: { onRecruiter: () => void; onT
       <div className="eyebrow"><span><b>ABIDI.MA</b> · {t.hero.eyebrowL}</span><span>{t.hero.eyebrowR}</span></div>
       <div className="hero-grid">
         <div className="hero-main">
-          <h1 className="sr">Mouhamed Ali Abidi</h1>
           <div className="stage">
-            <canvas ref={nameRef} id="nameCv" aria-hidden="true" />
+            {/* The visible name is drawn in the canvas; the h1 wraps it and carries the text. */}
+            <h1 className="name">
+              <span className="sr">{ME}</span>
+              <canvas ref={nameRef} id="nameCv" aria-hidden="true" />
+            </h1>
             <span className="hint">{touch ? t.hero.hintTouch : t.hero.hint}</span>
           </div>
           <p className="role"><strong>{t.hero.roleStrong}</strong>{t.hero.role}</p>

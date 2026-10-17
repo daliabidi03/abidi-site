@@ -48,6 +48,7 @@ a{color:inherit}
 .eyebrow{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-family:var(--mono);font-size:12.5px;color:var(--muted);margin-bottom:14px}
 .eyebrow b{color:var(--ink);font-weight:600}
 .stage{position:relative;cursor:crosshair;touch-action:pan-y}
+.stage .name{margin:0}
 #nameCv{display:block;width:100%;height:280px}
 .hint{position:absolute;right:0;bottom:-4px;font-family:var(--mono);font-size:11.5px;color:var(--muted);background:var(--paper);padding:2px 0 2px 8px}
 .hero-grid{display:grid;grid-template-columns:minmax(0,8fr) minmax(0,4fr);gap:40px;align-items:start}

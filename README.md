@@ -33,6 +33,16 @@ La photo est `src/assets/portrait.jpg` (format 4:5, fond clair et uni pour un be
 | `src/components/Terminal.tsx` | commandes du terminal |
 | `src/components/Recruiter.tsx` | mode recruteur |
 | `src/styles.css` | couleurs (tokens en haut du fichier), mise en page, mobile |
+| `seo.ts` | JSON-LD, contenu de secours sans JavaScript, robots.txt, sitemap.xml |
+
+## Référencement (SEO)
+
+- L'adresse publique du site est la constante **`SITE_URL`** en haut de `vite.config.ts`. C'est le seul endroit à changer (canonical, Open Graph, JSON-LD, `robots.txt`, `sitemap.xml`).
+- Les balises `<title>`, description, Open Graph et Twitter sont dans `index.html`.
+- Le JSON-LD `Person` et le contenu HTML de secours (lu par les robots sans JavaScript) sont générés au build depuis `src/content.ts`. Ils restent donc à jour quand tu modifies tes expériences.
+- `robots.txt` et `sitemap.xml` sont générés au build (et servis par `npm run dev`).
+- L'image de partage est `public/og.jpg`.
+- Google Search Console : choisis la méthode « Balise HTML », décommente la ligne `google-site-verification` dans `index.html`, colle ton code, puis pousse. Soumets ensuite `sitemap.xml`.
 
 ## Mettre en ligne sur Cloudflare Pages
 
@@ -47,7 +57,7 @@ La photo est `src/assets/portrait.jpg` (format 4:5, fond clair et uni pour un be
 3. Réglages de build :
    - Build command : `npm run build`
    - Build output directory : `dist`
-4. Lance le déploiement. Le site est en ligne sur `abidi-site.pages.dev` (le nom dépend du projet).
+4. Lance le déploiement. Le site est en ligne sur `<nom-du-projet>.pages.dev` : nomme le projet `mouhamed-ali-abidi` pour qu'il corresponde à `SITE_URL`.
 5. Chaque `git push` sur `main` redéploie automatiquement.
 
 Les intitulés exacts du tableau de bord Cloudflare peuvent varier légèrement.
