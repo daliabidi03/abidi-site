@@ -39,6 +39,7 @@ function fallback() {
   return `<main class="wrap seo-fallback">
 <h1>${esc(ME)}</h1>
 <p><strong>${esc(hero.roleStrong)}</strong>${esc(hero.role)}</p>
+<p>${esc(hero.avail)}</p>
 <p>${esc(recruiter.summary)}</p>
 <h2>${esc(exp.h2)}</h2>
 ${exp.items.map(e => `<h3>${esc(e.role)} · <a href="${esc(e.url)}">${esc(e.company)}</a></h3>

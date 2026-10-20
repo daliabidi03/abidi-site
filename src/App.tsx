@@ -2,16 +2,16 @@ import { useEffect, useState } from 'react'
 import { useI18n } from './i18n'
 import { Header } from './components/Header'
 import { Hero } from './components/Hero'
-import { Fingerprint, Signature } from './components/Fingerprint'
+import { Signature } from './components/Signature'
+import { Finance } from './components/Finance'
 import { Trajectory } from './components/Trajectory'
-import { Pricer } from './components/Pricer'
 import { Contact, Education, Experience, Projects, Skills } from './components/Sections'
 import { Beyond } from './components/Beyond'
 import { Terminal } from './components/Terminal'
 import { Recruiter } from './components/Recruiter'
 
 const TAB_OF: Record<string, string> = {
-  top: 'top', empreinte: 'empreinte', trajectoire: 'empreinte', pricer: 'pricer', experience: 'experience',
+  top: 'top', finance: 'finance', trajectoire: 'experience', experience: 'experience',
   projets: 'experience', competences: 'experience', 'au-dela': 'experience', formation: 'experience', contact: 'contact',
 }
 
@@ -51,14 +51,29 @@ export default function App() {
     document.body.style.overflow = term || rec ? 'hidden' : ''
   }, [term, rec])
 
+  // The sections only exist once React has rendered, so the browser cannot honor a #anchor on its own:
+  // scroll to it once the fonts are in (they set the hero's height), after a frame and a short delay.
+  useEffect(() => {
+    const id = decodeURIComponent(location.hash.slice(1))
+    if (!id || !document.getElementById(id)) return
+    let raf = 0, timer = 0, done = false
+    const go = () => {
+      if (done) return
+      done = true
+      raf = requestAnimationFrame(() => { timer = window.setTimeout(() => document.getElementById(id)?.scrollIntoView(), 80) })
+    }
+    document.fonts?.ready.then(go)
+    const fallback = window.setTimeout(go, 1200)
+    return () => { done = true; cancelAnimationFrame(raf); clearTimeout(timer); clearTimeout(fallback) }
+  }, [])
+
   return (
     <>
       <Header onTerminal={() => setTerm(true)} />
       <main className="wrap">
         <Hero onRecruiter={() => setRec(true)} onTerminal={() => setTerm(true)} />
-        <Fingerprint />
+        <Finance />
         <Trajectory />
-        <Pricer />
         <Experience />
         <Projects />
         <Skills />

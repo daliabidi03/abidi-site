@@ -3,10 +3,9 @@
 Site personnel de Mouhamed Ali Abidi. React 18 + TypeScript + Vite, sans autre dépendance.
 
 - Nom et portrait en particules (processus d'Ornstein-Uhlenbeck)
-- Empreinte brownienne générée à partir d'un nom
+- Salle des marchés : offre de prêt (amortissement), police d'assurance (mutualisation par Monte Carlo) et ticket d'option (Black-Scholes vérifié par Monte Carlo)
 - Parcours en saut-diffusion (modèle de Merton)
-- Pricer Black-Scholes avec vérification Monte Carlo
-- Tableau interactif du nombre dérivé
+- Loi normale interactive (règle 68-95-99,7)
 - Français / anglais, terminal caché (touche `/`), mode recruteur
 - Version ordinateur et téléphone (barre de navigation en bas sur mobile)
 
@@ -29,7 +28,8 @@ La photo est `src/assets/portrait.jpg` (format 4:5, fond clair et uni pour un be
 |---|---|
 | `src/content.ts` | textes FR/EN, liens, expériences, projets |
 | `src/lib/heroEngine.ts` | animation du nom et du portrait |
-| `src/lib/finance.ts` | Black-Scholes, grecques, Monte Carlo |
+| `src/lib/finance.ts` | formats FR/EN, prêt, primes d'assurance, loi binomiale, Black-Scholes, grecques, Monte Carlo |
+| `src/components/Finance.tsx` | section « Salle des marchés » (onglets) ; `Loan.tsx`, `Insurance.tsx`, `Pricer.tsx` pour chaque guichet |
 | `src/components/Terminal.tsx` | commandes du terminal |
 | `src/components/Recruiter.tsx` | mode recruteur |
 | `src/styles.css` | couleurs (tokens en haut du fichier), mise en page, mobile |
@@ -42,6 +42,9 @@ La photo est `src/assets/portrait.jpg` (format 4:5, fond clair et uni pour un be
 - Le JSON-LD `Person` et le contenu HTML de secours (lu par les robots sans JavaScript) sont générés au build depuis `src/content.ts`. Ils restent donc à jour quand tu modifies tes expériences.
 - `robots.txt` et `sitemap.xml` sont générés au build (et servis par `npm run dev`).
 - L'image de partage est `public/og.jpg`.
+- Le favicon `public/favicon.svg` est mon empreinte ; pour le régénérer : `npx esbuild scripts/favicon.ts --bundle --platform=node --format=esm --log-level=warning | node --input-type=module`. `public/apple-touch-icon.png` (180 × 180) en est le rendu.
+- `public/404.html` est la page d'erreur : Cloudflare Pages la sert avec un code 404 pour les adresses inconnues.
+- La bande « cotations » de la section finance affiche des valeurs indicatives, à mettre à jour à la main dans `QUOTES` (`src/content.ts`).
 - Google Search Console : la balise `google-site-verification` est dans `index.html`, juste après `<title>`. Soumets `sitemap.xml` dans la Search Console.
 
 ## Mettre en ligne sur Cloudflare Pages

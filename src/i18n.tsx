@@ -20,8 +20,9 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     setL(l)
     try { localStorage.setItem(KEY, l) } catch { /* ignore */ }
   }
-  useEffect(() => { document.documentElement.lang = lang }, [lang])
-  return <I18nCtx.Provider value={{ lang, t: lang === 'fr' ? fr : en, setLang }}>{children}</I18nCtx.Provider>
+  const t = lang === 'fr' ? fr : en
+  useEffect(() => { document.documentElement.lang = lang; document.title = t.title }, [lang, t])
+  return <I18nCtx.Provider value={{ lang, t, setLang }}>{children}</I18nCtx.Provider>
 }
 
 export function useI18n(): Ctx {

@@ -29,17 +29,3 @@ export const gaussOf = (r: () => number) => (): number => {
 
 export const G = gaussOf(Math.random)
 
-export const hexId = (s: number) => '#' + s.toString(16).toUpperCase().padStart(8, '0')
-
-export function corr(a: number[], b: number[]): number {
-  const n = Math.min(a.length, b.length)
-  let ma = 0, mb = 0
-  for (let i = 0; i < n; i++) { ma += a[i]; mb += b[i] }
-  ma /= n; mb /= n
-  let c = 0, va = 0, vb = 0
-  for (let i = 0; i < n; i++) {
-    const x = a[i] - ma, y = b[i] - mb
-    c += x * y; va += x * x; vb += y * y
-  }
-  return c / Math.sqrt(va * vb || 1)
-}

@@ -28,6 +28,29 @@ export function CopyButton({ text, targetId, label, done, className }: { text: s
   return <button type="button" className={className} onClick={click}>{ok ? done : label}</button>
 }
 
+/** Labelled range input; `out` is the formatted value, shown and read by screen readers. */
+export function Slider({ id, label, value, set, min, max, step, out }: {
+  id: string; label: ReactNode; value: number; set: (n: number) => void; min: number; max: number; step: number; out: string
+}) {
+  return (
+    <label htmlFor={id}>
+      <span>{label}</span><output htmlFor={id}>{out}</output>
+      <input id={id} type="range" min={min} max={max} step={step} value={value} aria-valuetext={out} onChange={e => set(+e.target.value)} />
+    </label>
+  )
+}
+
+/** Segmented buttons: one choice among a few. */
+export function Seg<T extends string | number>({ label, options, value, set, show }: {
+  label: string; options: readonly T[]; value: T; set: (v: T) => void; show: (v: T) => string
+}) {
+  return (
+    <div className="seg" role="group" aria-label={label}>
+      {options.map(o => <button key={o} type="button" aria-pressed={o === value} onClick={() => set(o)}>{show(o)}</button>)}
+    </div>
+  )
+}
+
 export function LangSwitch() {
   const { lang, setLang, t } = useI18n()
   return (

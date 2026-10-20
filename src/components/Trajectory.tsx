@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useI18n } from '../i18n'
 import { fnv, gaussOf, mulberry } from '../lib/random'
 import { Section } from './common'
@@ -55,6 +55,9 @@ export function Trajectory() {
   const { t } = useI18n()
   const m = useModel()
   const [on, setOn] = useState(-1)
+  const chart = useRef<HTMLDivElement>(null)
+  // On narrow screens the chart scrolls sideways: start on the latest years.
+  useEffect(() => { const c = chart.current; if (c) c.scrollLeft = c.scrollWidth }, [])
   const xn = m.X(m.now)
   const today = new Date()
   const dd = String(today.getDate()).padStart(2, '0') + '/' + String(today.getMonth() + 1).padStart(2, '0') + '/' + today.getFullYear()
@@ -67,7 +70,7 @@ export function Trajectory() {
       <h2>{t.traj.h2}</h2>
       <p className="lede">{t.traj.lede}</p>
       <p className="mono" style={{ margin: '0 0 14px', fontSize: 14 }}>dS<sub>t</sub> = μS<sub>t</sub>dt + σS<sub>t</sub>dW<sub>t</sub> + S<sub>t−</sub>dJ<sub>t</sub></p>
-      <div className="chart">
+      <div className="chart" ref={chart}>
         <svg viewBox={`0 0 ${VW} ${VH}`} role="img" aria-label={t.traj.aria}>
           {m.years.map(y => (
             <g key={y}>

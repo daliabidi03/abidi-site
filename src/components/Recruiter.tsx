@@ -46,6 +46,7 @@ export function Recruiter({ onClose }: { onClose: () => void }) {
           <div>
             <h2>{ME}</h2>
             <p className="rec-role">{t.hero.roleStrong}</p>
+            <p className="avail"><i aria-hidden="true" />{t.hero.avail}</p>
             <p className="rec-sum">{R.summary}</p>
             <div className="links">
               <a href={'mailto:' + LINKS.email}>{LINKS.email}</a>

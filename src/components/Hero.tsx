@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { LINKS, ME } from '../content'
 import { useI18n } from '../i18n'
+import { fmtNum } from '../lib/finance'
 import { startHero } from '../lib/heroEngine'
 import portraitUrl from '../assets/portrait.jpg'
 
@@ -16,17 +17,24 @@ export function Hero({ onRecruiter, onTerminal }: { onRecruiter: () => void; onT
   const api = useRef<Api | null>(null)
   const [count, setCount] = useState(0)
   const [clear, setClear] = useState(false)
+  const [how, setHow] = useState(false)
+  // The engine writes the mean deviation straight into the DOM; these keep it in the current language.
+  const langRef = useRef(lang)
+  const spread = useRef(0)
+  langRef.current = lang
   const touch = typeof matchMedia !== 'undefined' && matchMedia('(hover: none)').matches
 
   useEffect(() => {
     const h = startHero({
       name: nameRef.current!, portrait: ptRef.current!, frame: frameRef.current!,
       img: imgRef.current!, spreadOut: spreadRef.current!, onCount: setCount,
+      fmt: v => { spread.current = v; return fmtNum(v, 1, langRef.current) },
     })
     api.current = h.api
     return h.dispose
   }, [])
   useEffect(() => { api.current?.setClear(clear) }, [clear])
+  useEffect(() => { if (spreadRef.current) spreadRef.current.textContent = fmtNum(spread.current, 1, lang) }, [lang])
 
   return (
     <div className="hero" id="top">
@@ -42,6 +50,7 @@ export function Hero({ onRecruiter, onTerminal }: { onRecruiter: () => void; onT
             <span className="hint">{touch ? t.hero.hintTouch : t.hero.hint}</span>
           </div>
           <p className="role"><strong>{t.hero.roleStrong}</strong>{t.hero.role}</p>
+          <p className="avail"><i aria-hidden="true" />{t.hero.avail}</p>
           <div className="links">
             <a href={'mailto:' + LINKS.email}>{LINKS.email}</a>
             <a href={LINKS.linkedin} target="_blank" rel="noopener">LinkedIn ↗</a>
@@ -52,10 +61,13 @@ export function Hero({ onRecruiter, onTerminal }: { onRecruiter: () => void; onT
             <button type="button" onClick={onRecruiter}>{t.hero.recruiter}</button>
             <button type="button" className="ghost" onClick={onTerminal}>{t.hero.terminal} <kbd>/</kbd></button>
           </div>
-          <div className="instr">
+          <button type="button" className="how" aria-expanded={how} aria-controls="how" onClick={() => setHow(o => !o)}>
+            <span aria-hidden="true">?</span>{t.hero.how}
+          </button>
+          <div className="instr" id="how" hidden={!how}>
             <span className="eq">dX<sub>t</sub> = θ(μ − X<sub>t</sub>)dt + σ dW<sub>t</sub></span>
             <span className="read"><span>{t.hero.ouText}</span></span>
-            <span className="read"><span>θ = 4 · σ = 4.5</span><span>{t.hero.spread} : <output ref={spreadRef}>0.0</output> px</span></span>
+            <span className="read"><span>θ = 4 · σ = {fmtNum(4.5, 1, lang)}</span><span>{t.hero.spread} <output ref={spreadRef} /> px</span></span>
             <div className="btns">
               <button type="button" onClick={() => api.current?.shock()}>{t.hero.shock}</button>
               <button type="button" className="ghost" onClick={() => api.current?.calm()}>{t.hero.calm}</button>

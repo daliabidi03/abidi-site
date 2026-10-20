@@ -1,17 +1,20 @@
 import { useEffect, useRef, useState } from 'react'
 import { useI18n, type Lang } from '../i18n'
-import { bsCall, fmtNum, gbmPath, greeks } from '../lib/finance'
-import { printCorr } from './Fingerprint'
+import { bsCall, fmtNum, fmtPct, fmtRaw, fmtTND, gbmPath, greeks, loanPayment, premiums } from '../lib/finance'
 import { scrollToId } from './common'
 
-type Line = { kind: 'in' | 'out' | 'err' | 'ok'; text: string }
-const SECTIONS = ['top', 'empreinte', 'trajectoire', 'pricer', 'experience', 'projets', 'competences', 'au-dela', 'formation', 'contact']
+// "help" lines keep the command and its description apart, so small screens can stack them.
+type Line = { kind: 'in' | 'out' | 'err' | 'ok'; text: string } | { kind: 'help'; cmd: string; text: string; w: number }
+const SECTIONS = ['top', 'finance', 'trajectoire', 'experience', 'projets', 'competences', 'au-dela', 'formation', 'contact']
 const ALIAS: Record<string, string> = {
-  home: 'top', accueil: 'top', fingerprint: 'empreinte', print: 'empreinte', trajectory: 'trajectoire',
+  home: 'top', accueil: 'top', pricer: 'finance', trajectory: 'trajectoire',
   projects: 'projets', skills: 'competences', education: 'formation', beyond: 'au-dela',
 }
 const COMMANDS = ['help', 'aide', 'whoami', 'exp', 'experience', 'projets', 'projects', 'skills', 'competences', 'formation', 'education',
-  'contact', 'price', 'simulate', 'empreinte', 'print', 'goto', 'lang', 'recruteur', 'recruiter', 'sudo', 'clear', 'exit']
+  'contact', 'price', 'loan', 'premium', 'simulate', 'goto', 'lang', 'recruteur', 'recruiter', 'sudo', 'clear', 'exit']
+
+/** Reads a number typed with either a dot or a comma ("8.5" or "8,5"). */
+const num = (s?: string) => (s === undefined ? NaN : Number(s.replace(',', '.')))
 
 const SPARK = '▁▂▃▄▅▆▇█'
 function sparkline(p: number[], width = 56) {
@@ -34,16 +37,17 @@ export function Terminal({ onClose, onRecruiter }: { onClose: () => void; onRecr
   useEffect(() => { outRef.current?.scrollTo({ top: outRef.current.scrollHeight }) }, [lines])
 
   const f = (x: number, n = 2, l: Lang = lang) => fmtNum(x, n, l)
+  const raw = (x: number) => fmtRaw(x, lang)
 
-  function run(raw: string): Line[] {
-    const [cmd0, ...args] = raw.trim().split(/\s+/)
+  function run(raw0: string): Line[] {
+    const [cmd0, ...args] = raw0.trim().split(/\s+/)
     const cmd = (cmd0 || '').toLowerCase()
-    const out = (text: string, kind: Line['kind'] = 'out') => ({ kind, text })
+    const out = (text: string, kind: 'out' | 'err' | 'ok' = 'out'): Line => ({ kind, text })
     switch (cmd) {
       case '': return []
       case 'help': case 'aide': {
         const w = Math.max(...T.help.map(h => h[0].length)) + 2
-        return T.help.map(([c, d]) => out(c.padEnd(w) + d))
+        return T.help.map(([c, d]) => ({ kind: 'help', cmd: c, text: d, w }))
       }
       case 'whoami': return [out(T.whoami, 'ok')]
       case 'exp': case 'experience':
@@ -56,20 +60,35 @@ export function Terminal({ onClose, onRecruiter }: { onClose: () => void; onRecr
         return t.edu.rows.map(([w, title, school]) => out(`${w.padEnd(16)}${title} · ${school.replace(/<[^>]+>/g, '')}`))
       case 'contact': return T.contactLines.map(l => out(l))
       case 'price': {
-        const [K, TT, v, r] = [Number(args[0]), Number(args[1]), Number(args[2]), args[3] === undefined ? 0.04 : Number(args[3])]
+        const [K, TT, v, r] = [num(args[0]), num(args[1]), num(args[2]), args[3] === undefined ? 0.04 : num(args[3])]
         if (![K, TT, v, r].every(Number.isFinite) || K <= 0 || TT <= 0 || v <= 0) return [out(T.priceUsage, 'err')]
         const c = bsCall(100, K, TT, v, r).C, g = greeks(100, K, TT, v, r)
-        return [out(`Call  S₀=100  K=${K}  T=${TT}  σ=${v}  r=${r}`), out(`C = ${f(c)}   Δ = ${f(g.delta, 3)}   P(S_T > K) = ${Math.round(g.pITM * 100)} %`, 'ok')]
+        return [
+          out(`Call  S₀=100  K=${raw(K)}  T=${raw(TT)}  σ=${raw(v)}  r=${raw(r)}`),
+          out(`C = ${f(c)}   Δ = ${f(g.delta, 3)}   P(S_T > K) = ${fmtPct(Math.round(g.pITM * 100), 0, lang)}`, 'ok'),
+        ]
+      }
+      case 'loan': {
+        const [C, n, rate] = [num(args[0]), num(args[1]), num(args[2])]
+        if (![C, n, rate].every(Number.isFinite) || C <= 0 || n < 1 || !Number.isInteger(n) || rate < 0) return [out(T.loanUsage, 'err')]
+        const M = loanPayment(C, n, rate)
+        return [
+          out(T.loanIn(fmtTND(C, lang), String(n), fmtPct(rate, 2, lang))),
+          out(T.loanOut(fmtTND(M, lang), fmtTND(M * n - C, lang), fmtTND(M * n, lang)), 'ok'),
+        ]
+      }
+      case 'premium': {
+        const [pr, cost, load] = [num(args[0]), num(args[1]), num(args[2])]
+        if (![pr, cost, load].every(Number.isFinite) || pr <= 0 || pr > 100 || cost <= 0 || load < 0) return [out(T.premiumUsage, 'err')]
+        const { pure, gross } = premiums(pr / 100, cost, load / 100)
+        return [
+          out(T.premiumIn(fmtPct(pr, 2, lang), fmtTND(cost, lang), fmtPct(load, 2, lang))),
+          out(T.premiumOut(fmtTND(pure, lang), fmtTND(gross, lang)), 'ok'),
+        ]
       }
       case 'simulate': {
         const p = gbmPath(400, 0.18, 0.35)
         return [out(sparkline(p), 'ok'), out(T.simulate(f(p[p.length - 1])))]
-      }
-      case 'empreinte': case 'print': {
-        const name = args.join(' ')
-        if (!name) return [out(T.printUsage, 'err')]
-        const { id, rho } = printCorr(name)
-        return [out(T.printOut(id, (rho >= 0 ? '+' : '−') + Math.abs(rho).toFixed(2)), 'ok')]
       }
       case 'goto': {
         const s0 = (args[0] || '').toLowerCase(), s = ALIAS[s0] || s0
@@ -130,9 +149,11 @@ export function Terminal({ onClose, onRecruiter }: { onClose: () => void; onRecr
           <button type="button" onClick={onClose} aria-label="Fermer / Close">esc</button>
         </div>
         <div className="term-out" ref={outRef} aria-live="polite">
-          {lines.map((l, i) => (
-            <div key={i} className={'tl ' + l.kind}>{l.kind === 'in' ? <><span className="pr">abidi@ma:~$</span> {l.text}</> : l.text}</div>
-          ))}
+          {lines.map((l, i) =>
+            l.kind === 'help'
+              ? <div key={i} className="tl help" style={{ '--cw': l.w + 'ch' } as React.CSSProperties}><span>{l.cmd}</span><span>{l.text}</span></div>
+              : <div key={i} className={'tl ' + l.kind}>{l.kind === 'in' ? <><span className="pr">abidi@ma:~$</span> {l.text}</> : l.text}</div>,
+          )}
         </div>
         <form className="term-in" onSubmit={submit}>
           <label htmlFor="termIn" className="pr">abidi@ma:~$</label>

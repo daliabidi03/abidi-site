@@ -37,7 +37,6 @@ export function onTheme(cb: () => void): () => void {
   return () => { subs.delete(cb) }
 }
 
-export const isDark = () => parseInt((tokens().paper || '#ffffff').slice(1, 3), 16) < 128
 export const DPR = () => Math.min(window.devicePixelRatio || 1, 2)
 export const reduceMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches
 

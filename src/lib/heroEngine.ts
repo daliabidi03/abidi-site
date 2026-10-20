@@ -1,11 +1,13 @@
 // Hero animation: the name and the portrait are made of dots, each one an
 // Ornstein-Uhlenbeck process  dX = θ(μ − X)dt + σ dW  pulled back to its target μ.
 import { G } from './random'
-import { DPR, isDark, onTheme, reduceMotion, tokens } from './theme'
+import { DPR, onTheme, reduceMotion, tokens } from './theme'
 
 interface Dot { tx: number; ty: number; x: number; y: number; hot: boolean }
 interface Tone { tx: number; ty: number; x: number; y: number; t: number }
 type Pt = { x: number; y: number } | null
+
+const PORTRAIT_INK = '#0F1A2A', PORTRAIT_SIGNAL = '#E4572E'
 
 export interface HeroEls {
   name: HTMLCanvasElement
@@ -13,6 +15,7 @@ export interface HeroEls {
   frame: HTMLElement
   img: HTMLImageElement
   spreadOut: HTMLElement
+  fmt: (spread: number) => string
   onCount: (n: number) => void
 }
 
@@ -78,7 +81,7 @@ export function startHero(el: HeroEls) {
     pass(C.ink, (p, i) => !p.hot && !far[i])
     pass(C.signal, (p, i) => p.hot && !far[i])
     pass(C.cool, (_p, i) => far[i])
-    if (frame % 12 === 0) el.spreadOut.textContent = (sum / Math.max(P.length, 1)).toFixed(1)
+    if (frame % 12 === 0) el.spreadOut.textContent = el.fmt(sum / Math.max(P.length, 1))
   }
   function kick(at: Pt, R: number, f: number) {
     for (const p of P) {
@@ -123,15 +126,17 @@ export function startHero(el: HeroEls) {
       q.y += th * (q.ty - q.y) * dt + s * sq * G()
     }
   }
+  // The portrait is a halftone of a light photo: it keeps light-theme colors in both themes
+  // (in dark mode, inverted dots would turn the white shirt into a hole and the face into a negative).
   function pDraw() {
-    const C = tokens(), dk = isDark(), m = pstep * 0.58
+    const m = pstep * 0.58
     px.clearRect(0, 0, PW, PH)
-    for (const [col, wantFar] of [[C.ink, false], [C.signal, true]] as [string, boolean][]) {
+    for (const [col, wantFar] of [[PORTRAIT_INK, false], [PORTRAIT_SIGNAL, true]] as [string, boolean][]) {
       px.fillStyle = col; px.beginPath()
       for (const q of Q) {
         const far = Math.abs(q.x - q.tx) + Math.abs(q.y - q.ty) > 7
         if (far !== wantFar) continue
-        const r = Math.pow(dk ? q.t : 1 - q.t, 1.1) * m
+        const r = Math.pow(1 - q.t, 1.1) * m
         if (r < 0.32) continue
         px.moveTo(q.x + r, q.y); px.arc(q.x, q.y, r, 0, 6.2832)
       }
