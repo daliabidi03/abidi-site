@@ -44,7 +44,7 @@ La photo est `src/assets/portrait.jpg` (format 4:5, fond clair et uni pour un be
 - L'image de partage est `public/og.jpg`.
 - Le favicon `public/favicon.svg` est mon empreinte ; pour le régénérer : `npx esbuild scripts/favicon.ts --bundle --platform=node --format=esm --log-level=warning | node --input-type=module`. `public/apple-touch-icon.png` (180 × 180) en est le rendu.
 - `public/404.html` est la page d'erreur : Cloudflare Pages la sert avec un code 404 pour les adresses inconnues.
-- La bande « cotations » de la section finance affiche des valeurs indicatives, à mettre à jour à la main dans `QUOTES` (`src/content.ts`).
+- La bande « cotations » de la section finance affiche des valeurs vérifiées (TUNINDEX : BVMT, TMM : BCT), à mettre à jour à la main dans `QUOTES`, avec leur date dans `QUOTES_DATE` (`src/content.ts`).
 - Google Search Console : la balise `google-site-verification` est dans `index.html`, juste après `<title>`. Soumets `sitemap.xml` dans la Search Console.
 
 ## Mettre en ligne sur Cloudflare Pages

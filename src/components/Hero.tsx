@@ -58,7 +58,7 @@ export function Hero({ onRecruiter, onTerminal }: { onRecruiter: () => void; onT
             <span>{LINKS.phone}</span>
           </div>
           <div className="cta">
-            <button type="button" onClick={onRecruiter}>{t.hero.recruiter}</button>
+            <button type="button" onClick={onRecruiter}>{t.hero.recruiter}<span className="cta-time">{t.hero.recruiterTime}</span></button>
             <button type="button" className="ghost" onClick={onTerminal}>{t.hero.terminal} <kbd>/</kbd></button>
           </div>
           <button type="button" className="how" aria-expanded={how} aria-controls="how" onClick={() => setHow(o => !o)}>

@@ -36,7 +36,12 @@ export function Projects() {
             <p>{p.desc}</p>
             <div className="fig"><strong>{p.figStrong}</strong><span>{p.figText}</span></div>
             <div className="tags">{p.tags.map(g => <span key={g}>{g}</span>)}</div>
-            {p.repo && <a className="ext repo" href={p.repo} target="_blank" rel="noopener">{t.proj.code}</a>}
+            {p.repo && (
+              <div className="repo-row">
+                <a className="ext repo" href={p.repo} target="_blank" rel="noopener">{t.proj.code}</a>
+                {p.note && <small>{p.note}</small>}
+              </div>
+            )}
           </article>
         ))}
       </div>

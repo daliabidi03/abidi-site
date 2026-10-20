@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { QUOTES } from '../content'
+import { QUOTES, QUOTES_DATE } from '../content'
 import { useI18n } from '../i18n'
 import { fmtNum, fmtPct } from '../lib/finance'
 import { Section } from './common'
@@ -15,6 +15,8 @@ export function Finance() {
   const [tab, setTab] = useState(0)
   const tabs = useRef<(HTMLButtonElement | null)[]>([])
   const date = new Date().toLocaleDateString(lang === 'fr' ? 'fr-FR' : 'en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
+  const asOf = new Date(QUOTES_DATE + 'T12:00:00').toLocaleDateString(lang === 'fr' ? 'fr-FR' : 'en-GB',
+    lang === 'fr' ? { day: '2-digit', month: '2-digit', year: 'numeric' } : { day: 'numeric', month: 'short', year: 'numeric' })
 
   // Arrow keys, Home and End move between tabs (WAI-ARIA tabs pattern, automatic activation).
   const onKey = (e: React.KeyboardEvent) => {
@@ -33,7 +35,7 @@ export function Finance() {
         {QUOTES.map(q => (
           <span key={q.name}><b>{q.name}</b>{q.pct ? fmtPct(q.value, q.dec, lang) : fmtNum(q.value, q.dec, lang)}</span>
         ))}
-        <em>{t.fin.indicative}</em>
+        <em>{t.fin.asOf(asOf)}</em>
       </div>
       <h2>{t.fin.h2}</h2>
       <p className="lede">{t.fin.lede}</p>

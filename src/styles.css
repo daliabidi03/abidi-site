@@ -137,7 +137,9 @@ h2{font-family:var(--display);font-weight:800;text-transform:uppercase;font-size
 .proj p{margin:0;color:var(--muted)}
 .fig{display:flex;gap:12px;align-items:baseline;border-top:1px solid var(--rule);padding-top:12px}
 .fig strong{flex:none;font-family:var(--display);font-weight:800;font-size:40px;line-height:1;color:var(--signal);white-space:nowrap}
+.repo-row{display:flex;align-items:center;gap:4px 14px;flex-wrap:wrap}
 .proj a.repo{justify-self:start;font:600 12px var(--mono);letter-spacing:.06em;text-transform:uppercase;display:inline-flex;align-items:center;min-height:40px}
+.repo-row small{font:500 11.5px var(--mono);color:var(--muted)}
 .fig span{font-size:14px;color:var(--muted)}
 
 /* portfolio */
@@ -286,6 +288,7 @@ a.ext:hover{color:var(--signal)}
 .loss span{font-size:15px}
 .loss strong{font:900 40px/1 var(--display);color:var(--signal)}
 .mutual > button{justify-self:start}
+.doc-disclaimer{margin:-6px 0 0;font:500 10.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 /* markets: a dealing ticket with an inverted header and a perforated edge */
 .doc.ticket{padding:0;gap:0}
 .ticket .doc-head{position:relative;padding:13px 20px;border:0;background:var(--ink);color:color-mix(in srgb,var(--paper) 72%,transparent)}
@@ -396,7 +399,7 @@ kbd{font:600 11px var(--mono);padding:1px 6px;border:1px solid currentColor;opac
 
 /* ===== hero calls to action ===== */
 .cta{display:flex;gap:10px;flex-wrap:wrap}
-.cta button{padding:13px 18px}
+.cta button{padding:13px 18px;white-space:nowrap}
 .cta button:first-child{background:var(--signal);color:#fff}
 .cta button:first-child:hover{background:var(--ink);color:var(--paper)}
 
@@ -449,6 +452,7 @@ kbd{font:600 11px var(--mono);padding:1px 6px;border:1px solid currentColor;opac
 .rec-list small{grid-column:2;grid-row:1;font:600 12px var(--mono);color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
 .rec-list span{grid-column:1/-1;color:var(--muted);font-size:14.5px}
 .rec-list p{grid-column:1/-1;margin:4px 0 0;font-size:14px;color:var(--muted)}
+.rec-list p.rec-repo{font:500 12px var(--mono)}
 .rec-dl{margin:0 0 10px;display:grid}
 .rec-dl div{display:grid;grid-template-columns:118px minmax(0,1fr);gap:10px;padding:8px 0;border-bottom:1px solid var(--rule)}
 .rec-dl dt{font:600 11.5px var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
@@ -468,7 +472,8 @@ kbd{font:600 11px var(--mono);padding:1px 6px;border:1px solid currentColor;opac
   .rec-hi strong{font-size:24px}
   .rec-bar > .mono{display:none}
   .rec-bar{justify-content:flex-end}
-  .cta button{flex:1}
+  .cta{align-self:stretch}
+  .cta button{flex:1 1 auto}
   .term-wrap{padding:0;align-items:stretch}
   .term{height:100%;width:100%;border:0;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
   .term-in input{font-size:16px}
@@ -486,6 +491,7 @@ kbd{font:600 11px var(--mono);padding:1px 6px;border:1px solid currentColor;opac
   .cta button{padding-inline:10px;letter-spacing:.03em}
   .portrait figcaption button{min-height:40px}
 }
+@media (max-width:420px){ .cta-time{display:none} }
 @media (max-width:400px){
   .top{gap:10px;letter-spacing:.03em}
   .tools{gap:6px}

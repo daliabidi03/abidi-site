@@ -53,7 +53,10 @@ export function Terminal({ onClose, onRecruiter }: { onClose: () => void; onRecr
       case 'exp': case 'experience':
         return t.exp.items.flatMap(x => [out(`${x.when}  ${x.role} · ${x.company}`, 'ok'), out('           ' + x.where)])
       case 'projets': case 'projects':
-        return t.proj.items.map(p => out(`${p.name.padEnd(12)}${p.sub} (${p.when})`))
+        return t.proj.items.flatMap(p => [
+          out(`${p.name.padEnd(12)}${p.sub} (${p.when})`),
+          ...(p.repo ? [out(' '.repeat(12) + p.repo + (p.note ? ` · ${p.note}` : ''), 'ok')] : []),
+        ])
       case 'skills': case 'competences':
         return t.skills.groups.map(([k, v]) => out(`${k.padEnd(18)}${v}`))
       case 'formation': case 'education':
@@ -78,7 +81,9 @@ export function Terminal({ onClose, onRecruiter }: { onClose: () => void; onRecr
         ]
       }
       case 'premium': {
-        const [pr, cost, load] = [num(args[0]), num(args[1]), num(args[2])]
+        // p and loading in % (8, 25) or, below 1, as fractions (0.08, 0.25).
+        const pct = (x: number) => (x < 1 ? x * 100 : x)
+        const [pr, cost, load] = [pct(num(args[0])), num(args[1]), pct(num(args[2]))]
         if (![pr, cost, load].every(Number.isFinite) || pr <= 0 || pr > 100 || cost <= 0 || load < 0) return [out(T.premiumUsage, 'err')]
         const { pure, gross } = premiums(pr / 100, cost, load / 100)
         return [

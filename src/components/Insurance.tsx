@@ -27,18 +27,20 @@ export function InsurancePolicy() {
   const us = useMemo(() => { const r = mulberry(seed); return Float64Array.from({ length: YEARS }, () => r()) }, [seed])
   const sim = useMemo(() => {
     const ks = binomialQuantiles(N, p, us), step = cost / N
-    let kmax = 0
-    for (const k of ks) if (k > kmax) kmax = k
-    // The x axis is set by the most dispersed portfolio (10 policyholders, 99% quantile), so it stays put
-    // when N changes; it only stretches if a rare year would not fit.
-    const xmax = Math.max((binomialQuantiles(10, p, [0.99])[0] + 1) * cost / 10, gross * 1.5, (kmax + 1) * step)
-    const m = Math.max(1, Math.ceil(xmax / 48 / step)), nb = Math.floor(xmax / (m * step)) + 1
+    // The x axis stops at the 99.5th percentile of the simulated years, rounded up to a round value,
+    // and always leaves room for the gross premium line. The rarest years (≤ 0.5%) fall off the chart,
+    // not out of the loss probability.
+    const q995 = Int32Array.from(ks).sort()[Math.floor(0.995 * (YEARS - 1))] * step
+    const top = Math.max(q995, gross * 1.1), xs = niceStep(top, 5), xmax = Math.ceil(top / xs - 1e-9) * xs
+    const m = Math.max(1, Math.ceil(xmax / 48 / step)), nb = Math.ceil((xmax / step + 0.5) / m)
     const all = new Array<number>(nb).fill(0), loss = new Array<number>(nb).fill(0)
     let losses = 0
     for (const k of ks) {
-      const b = Math.min(nb - 1, Math.floor(k / m))
+      const b = Math.floor(k / m), lost = k * step > gross + 1e-9
+      if (lost) losses++
+      if (b >= nb) continue
       all[b]++
-      if (k * step > gross + 1e-9) { loss[b]++; losses++ }
+      if (lost) loss[b]++
     }
     return { all, loss, m, step, xmax, pLoss: losses / YEARS }
   }, [N, p, cost, gross, us])
@@ -67,6 +69,7 @@ export function InsurancePolicy() {
       if (X(x) + half > w) continue // a label that would be cut at the right edge is left out
       ctx.fillText(s, X(x), h - 7); ctx.beginPath(); ctx.moveTo(X(x), Y(0)); ctx.lineTo(X(x), Y(0) + 4); ctx.stroke()
     }
+    ctx.save(); ctx.beginPath(); ctx.rect(p.l, 0, w - p.l - p.r, h); ctx.clip()
     all.forEach((c, b) => {
       if (!c) return
       const xa = X((b * m - 0.5) * step), xb = X((b * m + m - 0.5) * step), gap = xb - xa > 5 ? 1 : 0
@@ -74,6 +77,7 @@ export function InsurancePolicy() {
       ctx.fillStyle = tk.cool; ctx.fillRect(xa + gap, Y(0) - hAll, xb - xa - 2 * gap, hAll - hLoss)
       ctx.fillStyle = tk.signal; ctx.fillRect(xa + gap, Y(0) - hLoss, xb - xa - 2 * gap, hLoss)
     })
+    ctx.restore()
     const vline = (x: number, col: string, dash: number[]) => {
       ctx.strokeStyle = col; ctx.lineWidth = 2; ctx.setLineDash(dash)
       ctx.beginPath(); ctx.moveTo(X(x), p.t); ctx.lineTo(X(x), Y(0)); ctx.stroke(); ctx.setLineDash([])
@@ -115,6 +119,7 @@ export function InsurancePolicy() {
         <p className="doc-note">{I.note}</p>
         <button type="button" className="ghost" onClick={() => setSeed((Math.random() * 4294967296) >>> 0)}>{I.rerun}</button>
       </div>
+      <p className="doc-disclaimer">{t.fin.disclaimer}</p>
     </article>
   )
 }

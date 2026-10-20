@@ -13,6 +13,7 @@ export const LINKS = {
   polytech: 'https://www.universitecentrale.net/ecole/ecole-centrale-superieure-privee-polytechnique',
   enactus: 'https://www.instagram.com/enactus_ucentrale/',
   fitmindRepo: 'https://github.com/abidimouhamedali2-ops/fitmind-ai-salle-de-sport',
+  krediaRepo: 'https://github.com/chebaane1/Esprit-PIDEV-4INFINI-2026-Kredia',
 }
 
 export const ME = 'Mouhamed Ali Abidi'
@@ -26,15 +27,15 @@ export interface Experience {
 }
 export interface Project {
   name: string; when: string; kind: string; sub: string; desc: string
-  figStrong: string; figText: string; tags: string[]; repo?: string
+  figStrong: string; figText: string; tags: string[]; repo?: string; note?: string
 }
 
-// Decorative quote strip of the finance section: indicative values set by hand, not live prices.
+// Quote strip of the finance section: checked values, updated by hand (not live prices).
+// TUNINDEX: BVMT closing value; TMM: BCT monthly average. Change QUOTES_DATE with the values.
+export const QUOTES_DATE = '2026-10-14'
 export const QUOTES: { name: string; value: number; dec: number; pct?: boolean }[] = [
-  { name: 'TUNINDEX', value: 11950, dec: 0 },
-  { name: 'EUR/TND', value: 3.42, dec: 2 },
-  { name: 'USD/TND', value: 2.93, dec: 2 },
-  { name: 'TMM', value: 7.49, dec: 2, pct: true },
+  { name: 'TUNINDEX', value: 18705.42, dec: 2 },
+  { name: 'TMM', value: 7, dec: 2, pct: true },
 ]
 
 const TAGS = {
@@ -67,7 +68,7 @@ export const fr = {
     roleStrong: 'Ingénieur Full-Stack, Fintech & IA.',
     role: " Je transforme des problèmes complexes en produits concrets, de l'architecture back-end jusqu'au dernier pixel.",
     avail: "Ouvert aux opportunités de stage et d'alternance",
-    recruiter: 'Mode recruteur · 30 s',
+    recruiter: 'Mode recruteur', recruiterTime: ' · 30 s',
     terminal: 'Ouvrir le terminal',
     ouText: "Chaque point de mon nom suit un processus d'Ornstein-Uhlenbeck : il est secoué au hasard, puis revient toujours à sa place.",
     how: 'Comment ça marche',
@@ -101,9 +102,10 @@ export const fr = {
     h2: 'Trois guichets, un ingénieur',
     lede: "Choisissez un guichet et réglez les paramètres\u00a0: chaque chiffre est calculé en direct dans votre navigateur, avec les formules qu'utilisent les professionnels.",
     quotes: 'Cotations',
-    indicative: 'Valeurs indicatives',
+    asOf: (d: string) => `Données au ${d} · BVMT, BCT`,
     desks: 'Guichets',
     tabs: ['Banque', 'Assurance', 'Bourse'],
+    disclaimer: 'Document de simulation · sans valeur contractuelle',
   },
   loan: {
     no: 'Offre de prêt · N° 2026-0001',
@@ -196,7 +198,8 @@ export const fr = {
       {
         name: 'Kredia', when: '01/2026 → 05/2026', kind: 'Micro-finance', sub: 'Plateforme intelligente de micro-finance',
         desc: "Démocratiser l'accès au crédit pour les populations sous-bancarisées. Simulation de crédit, demande de prêt en ligne, suivi des remboursements et espace investissement. Assistant financier IA (Gemini), dashboard admin d'analyse de risque, données de marché en temps réel et brique blockchain.",
-        figStrong: 'Inclusion', figText: 'Le crédit, accessible en ligne aux personnes sous-bancarisées.', tags: TAGS.kredia,
+        figStrong: 'Inclusion', figText: 'Simulation, demande et suivi du crédit, 100\u00a0% en ligne.', tags: TAGS.kredia,
+        repo: LINKS.krediaRepo, note: "Projet d'équipe · ESPRIT",
       },
       {
         name: 'FitMind AI', when: '10/2025 → 11/2025', kind: 'Projet personnel', sub: "Coaching sportif propulsé par l'IA",
@@ -287,7 +290,7 @@ export const fr = {
       ['formation', 'mon parcours académique'], ['contact', 'me joindre'],
       ['price K T σ', "prix d'un call Black-Scholes (ex. price 100 1 0.3)"],
       ['loan <montant> <mois> <taux>', "mensualité d'un prêt, taux en % (ex. loan 80000 120 8.5)"],
-      ['premium <p> <coût> <chargement>', "primes d'assurance, p et chargement en % (ex. premium 8 4000 25)"],
+      ['premium <p> <coût> <chargement>', "primes d'assurance, p et chargement en % ou en fraction (ex. premium 8 4000 25 ou premium 0.08 4000 0.25)"],
       ['simulate', 'une trajectoire brownienne en direct'],
       ['goto <section>', 'aller à une section du site'],
       ['lang fr|en', 'changer de langue'], ['recruteur', 'ouvrir le mode recruteur'],
@@ -301,7 +304,7 @@ export const fr = {
     loanUsage: 'usage : loan <montant> <mois> <taux>   ex. loan 80000 120 8.5',
     loanIn: (c: string, n: string, r: string) => `Prêt ${c} · ${n} mois · taux ${r}`,
     loanOut: (m: string, i: string, tot: string) => `Mensualité : ${m} · intérêts : ${i} · total remboursé : ${tot}`,
-    premiumUsage: 'usage : premium <p> <coût> <chargement>   ex. premium 8 4000 25',
+    premiumUsage: 'usage : premium <p> <coût> <chargement>   ex. premium 8 4000 25 ou premium 0.08 4000 0.25',
     premiumIn: (p: string, c: string, l: string) => `p = ${p} · coût moyen ${c} · chargement ${l}`,
     premiumOut: (pure: string, gross: string) => `Prime pure : ${pure} · prime commerciale : ${gross} (par assuré et par an)`,
     simulate: (st: string) => `S_T = ${st}   (μ = 0,18 · σ = 0,35 · 1 an)`,
@@ -331,7 +334,7 @@ export const en: Dict = {
     roleStrong: 'Full-Stack Engineer, Fintech & AI.',
     role: ' I turn complex problems into concrete products, from back-end architecture down to the last pixel.',
     avail: 'Open to internship and work-study opportunities',
-    recruiter: 'Recruiter mode · 30 s',
+    recruiter: 'Recruiter mode', recruiterTime: ' · 30 s',
     terminal: 'Open the terminal',
     ouText: 'Every dot of my name follows an Ornstein-Uhlenbeck process: shaken at random, it always returns to its place.',
     how: 'How it works',
@@ -365,9 +368,10 @@ export const en: Dict = {
     h2: 'Three desks, one engineer',
     lede: 'Pick a desk and adjust the parameters: every figure is computed live in your browser, with the formulas professionals use.',
     quotes: 'Quotes',
-    indicative: 'Indicative values',
+    asOf: (d: string) => `Data as of ${d} · BVMT, BCT`,
     desks: 'Desks',
     tabs: ['Banking', 'Insurance', 'Markets'],
+    disclaimer: 'Simulation only · not a contractual document',
   },
   loan: {
     no: 'Loan offer · No. 2026-0001',
@@ -460,7 +464,8 @@ export const en: Dict = {
       {
         name: 'Kredia', when: '01/2026 → 05/2026', kind: 'Micro-finance', sub: 'Intelligent micro-finance platform',
         desc: 'Opening up access to credit for under-banked populations. Credit simulation, online loan applications, repayment tracking and an investment space. AI financial assistant (Gemini), admin dashboard for risk analysis, real-time market data and a blockchain module.',
-        figStrong: 'Inclusion', figText: 'Credit made accessible online to under-banked people.', tags: TAGS.kredia,
+        figStrong: 'Inclusion', figText: 'Credit simulation, application and tracking, 100% online.', tags: TAGS.kredia,
+        repo: LINKS.krediaRepo, note: 'Team project · ESPRIT',
       },
       {
         name: 'FitMind AI', when: '10/2025 → 11/2025', kind: 'Personal project', sub: 'AI-powered fitness coaching',
@@ -551,7 +556,7 @@ export const en: Dict = {
       ['education', 'my academic path'], ['contact', 'reach me'],
       ['price K T σ', 'Black-Scholes call price (e.g. price 100 1 0.3)'],
       ['loan <amount> <months> <rate>', 'monthly loan payment, rate in % (e.g. loan 80000 120 8.5)'],
-      ['premium <p> <cost> <loading>', 'insurance premiums, p and loading in % (e.g. premium 8 4000 25)'],
+      ['premium <p> <cost> <loading>', 'insurance premiums, p and loading in % or as a fraction (e.g. premium 8 4000 25 or premium 0.08 4000 0.25)'],
       ['simulate', 'a live Brownian path'],
       ['goto <section>', 'jump to a section of the site'],
       ['lang fr|en', 'switch language'], ['recruiter', 'open recruiter mode'],
@@ -565,7 +570,7 @@ export const en: Dict = {
     loanUsage: 'usage: loan <amount> <months> <rate>   e.g. loan 80000 120 8.5',
     loanIn: (c: string, n: string, r: string) => `Loan ${c} · ${n} months · rate ${r}`,
     loanOut: (m: string, i: string, tot: string) => `Monthly payment: ${m} · interest: ${i} · total repaid: ${tot}`,
-    premiumUsage: 'usage: premium <p> <cost> <loading>   e.g. premium 8 4000 25',
+    premiumUsage: 'usage: premium <p> <cost> <loading>   e.g. premium 8 4000 25 or premium 0.08 4000 0.25',
     premiumIn: (p: string, c: string, l: string) => `p = ${p} · average cost ${c} · loading ${l}`,
     premiumOut: (pure: string, gross: string) => `Pure premium: ${pure} · gross premium: ${gross} (per policyholder per year)`,
     simulate: (st: string) => `S_T = ${st}   (μ = 0.18 · σ = 0.35 · 1 year)`,

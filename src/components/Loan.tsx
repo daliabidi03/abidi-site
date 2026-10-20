@@ -125,6 +125,7 @@ export function LoanOffer({ date }: { date: string }) {
           <b>{ME}</b>
         </div>
       </footer>
+      <p className="doc-disclaimer">{t.fin.disclaimer}</p>
     </article>
   )
 }

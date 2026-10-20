@@ -76,7 +76,16 @@ export function Recruiter({ onClose }: { onClose: () => void }) {
             </ul>
             <h3>{R.proj}</h3>
             <ul className="rec-list">
-              {t.proj.items.map(p => <li key={p.name}><b>{p.name}</b><span>{p.sub}</span><small>{p.when}</small></li>)}
+              {t.proj.items.map(p => (
+                <li key={p.name}>
+                  <b>{p.name}</b><span>{p.sub}</span><small>{p.when}</small>
+                  {p.repo && (
+                    <p className="rec-repo">
+                      <a className="ext" href={p.repo} target="_blank" rel="noopener">{t.proj.code}</a>{p.note && ` · ${p.note}`}
+                    </p>
+                  )}
+                </li>
+              ))}
             </ul>
           </div>
           <div>
